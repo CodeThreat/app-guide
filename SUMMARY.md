@@ -20,3 +20,18 @@
   * [Installation](ct-server-installation/installation.md)
 * [Privacy Policy](privacy-policy.md)
 * [Terms of Service](terms-of-service.md)
+
+## Group 1
+
+* [Introducing CodeThreat](group-1/introducing-codethreat.md)
+* [Create a CodeThreat Account](group-1/create-a-codethreat-account.md)
+* [Quick Start & Scan](group-1/quick-start-and-scan.md)
+* [HomePage](group-1/homepage.md)
+* [Projects](group-1/projects/README.md)
+  * [Overview](group-1/projects/overview.md)
+  * [Scans](group-1/projects/scans.md)
+  * [SCA(Software Composition Analysis)](group-1/projects/sca-software-composition-analysis.md)
+  * [Licences](group-1/projects/licences.md)
+  * [Dependency Tree](group-1/projects/dependency-tree.md)
+  * [Project Structure](group-1/projects/project-structure.md)
+  * [Report](group-1/projects/report.md)
