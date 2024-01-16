@@ -2,7 +2,7 @@
 
 The Scans page provides users with a detailed view of all scans conducted on project. Here, you can find a chronological listing of scan summaries, with the most recent scans displayed first.
 
-<figure><img src="../../.gitbook/assets/image (9).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (9) (1).png" alt=""><figcaption></figcaption></figure>
 
 1. **Search Bar**:
    * Use this feature to quickly search for specific scans using keywords or scan IDs.

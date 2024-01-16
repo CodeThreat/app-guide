@@ -2,11 +2,11 @@
 
 The Project Detail Page offers a comprehensive overview of the security scanning results associated with a specific project. Here, users can delve into detailed data points, such as the risk score, the number of open and closed issues, and the total lines of code. Moreover, the page outlines specific vulnerabilities based on recognized standards and frameworks like CWE, HIPAA, NIST800-53R4, PCI DSS 3.2.1, ISO27001, and OWASP Top 10.
 
-<figure><img src="../../.gitbook/assets/image (6).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (6) (1).png" alt=""><figcaption></figcaption></figure>
 
 On the right sidebar, users can find essential project metadata, including the project's name, the ID of the last scan, the most recent scan date, the project's creation date, and the status of the last scan. The 'Issue Trend' graph, situated at the bottom, depicts the evolution of vulnerabilities in the project over time, providing users with a visual representation of the project's security trajectory.
 
-<figure><img src="../../.gitbook/assets/image (7).png" alt="" width="188"><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (7) (1).png" alt="" width="188"><figcaption></figcaption></figure>
 
 Branch: Users can switch between different branches of the project using the dropdown menu. The current branch displayed is develop.
 
@@ -32,7 +32,7 @@ Branch: Users can switch between different branches of the project using the dro
 
 **Last Scan Status:** Depicts the status of the last scan. A green checkmark signifies a successful scan, while a red cross would indicate a failed scan.
 
-<figure><img src="../../.gitbook/assets/image (8).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (8) (1).png" alt=""><figcaption></figcaption></figure>
 
 This section provides a breakdown of vulnerabilities based on various recognized standards:
 

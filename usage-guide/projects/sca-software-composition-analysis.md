@@ -2,7 +2,7 @@
 
 CodeThreat SCA designed to give teams an in-depth understanding of their project's dependencies. Our new information panel provides a transparent overview of open-source components, their licenses, and associated vulnerabilities, directly within your workflow
 
-<figure><img src="../../.gitbook/assets/image (10).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (10) (1).png" alt=""><figcaption></figcaption></figure>
 
 * **Identify Issues Quickly:** Understand the specific vulnerabilities of third-party components in your code.
 * **Actionable Solutions:** Receive clear guidance on resolving identified issues and keeping your dependencies secure.

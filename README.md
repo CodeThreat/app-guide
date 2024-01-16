@@ -35,7 +35,7 @@ Our goal is to provide a comprehensive software bill of materials (SBOM) report 
 CodeThreat SCA designed to give teams an in-depth understanding of their project's dependencies. Our new information panel provides a transparent overview of open-source components, their licenses, and associated vulnerabilities, directly within your workflow\
 
 
-<figure><img src=".gitbook/assets/image (1) (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src=".gitbook/assets/image (1) (1) (1).png" alt=""><figcaption></figcaption></figure>
 
 * **Identify Issues Quickly:** Understand the specific vulnerabilities of third-party components in your code.
 * **Actionable Solutions:** Receive clear guidance on resolving identified issues and keeping your dependencies secure.
@@ -54,7 +54,7 @@ We're introducing license tracking feature within our SCA toolkit. This feature 
 The license tracking feature is currently experimental. As we continue to refine our platform, you can expect more comprehensive updates to this feature in future releases.
 {% endhint %}
 
-<figure><img src=".gitbook/assets/image (2) (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src=".gitbook/assets/image (2) (1) (1).png" alt=""><figcaption></figcaption></figure>
 
 ### 🔍  Dependency Graph
 
@@ -66,7 +66,7 @@ The license tracking feature is currently experimental. As we continue to refine
 The dependency graph feature is currently experimental. We are actively working to refine its capabilities, aiming to enhance visualization and utility in the forthcoming updates
 {% endhint %}
 
-<figure><img src=".gitbook/assets/image (4) (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src=".gitbook/assets/image (4) (1) (1).png" alt=""><figcaption></figcaption></figure>
 
 ## 🚀 Platform Updates
 
@@ -84,7 +84,7 @@ Our latest v2401.01 update brings a significant improvement to the way teams col
 
 **84 New C# and Java Rules:** We've significantly expanded our SAST rule set with **84** new rules for C# and Java.
 
-<figure><img src=".gitbook/assets/image (13).png" alt=""><figcaption><p>No one likes conflicts...right? </p></figcaption></figure>
+<figure><img src=".gitbook/assets/image (13) (1).png" alt=""><figcaption><p>No one likes conflicts...right? </p></figcaption></figure>
 
 ## 🐛 **Bug Fixes and Stability Updates**
 

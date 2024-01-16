@@ -1,6 +1,6 @@
 # Licences
 
-<figure><img src="../../.gitbook/assets/image (11).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (11) (1).png" alt=""><figcaption></figcaption></figure>
 
 * Each license entry will typically include the license name and may have a link or arrow to expand for more details.
 * Review the licenses to ensure compliance with legal requirements and project standards.

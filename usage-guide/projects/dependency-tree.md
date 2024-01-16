@@ -2,7 +2,7 @@
 
 The Dependency Tree view is a crucial tool in understanding the relationships and hierarchies between the various modules and libraries your project depends on. It helps in identifying potential issues with dependencies, such as conflicts or outdated libraries.
 
-<figure><img src="../../.gitbook/assets/image (12).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (12) (1).png" alt=""><figcaption></figcaption></figure>
 
 #### Navigating the Dependency Tree
 
