@@ -94,6 +94,9 @@ Accessing the Service
 * Use web-crawlers, bots, or scripts to copy or access any part of the Services, the Documentation, or the Service Data without explicit authorization.
 * Circumvent or attempt to override any security features installed by CodeThreat around the Services, the Platform, the Documentation, or the Service Data.
 * Copy, in part or in whole, our database of vulnerabilities without prior written consent from CodeThreat.
+*   The use of CodeThreat services for your company and other software used within your organization is essential. The use of CodeThreat services for external applications and/or third-party applications not directly used by the organization is strictly prohibited for any purposes not supported by CodeThreat, for whatever reason.
+
+    To eliminate any doubt, CodeThreat services serve the purpose of addressing software security vulnerabilities identified through the use of these services. Any form of malicious use, or reverse engineering is strictly prohibited, and any responsibility arising from non-compliance responsibility with the user.  CodeThreat does not, under any circumstances, approve of reverse engineering, whether for CodeThreat platform or for other software developed using CodeThreat services
 
 ## Payment and Renewable
 
@@ -122,6 +125,8 @@ Accessing the Service
 ## Disclaimer of Warranties
 
 &#x20;   You expressly agree that use of the site and services is at your sole risk. CodeThreat does not evaluate, screen, or censor the applications submitted in connection with the services or the applicants themselves. CodeThreat is not involved in and does not control the transaction between a job applicant and you. Accordingly, CodeThreat is not responsible for your interaction with any person who contacts you, including job applicants, in connection with your use of the services or the site.
+
+CodeThreat disclaims any responsibility arising from any malicious use of these services, non-compliance with usage prohibitions, and the consequences thereof. If CodeThreat incurs any damage due to non-compliance with these provisions, CodeThreat reserves the right to pass on any incurred damages to users.
 
 &#x20;   The site and services are provided on an “as is” and “as available” basis. We expressly disclaim all warranties of any kind, express or implied, with respect to the site and services available at the site, including without limitation any warranty of merchantability, fitness for a particular purpose or non-infringement.
 
