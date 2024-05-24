@@ -6,12 +6,12 @@ description: >-
 
 # Issue List
 
-<figure><img src="../../.gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (7).png" alt=""><figcaption></figcaption></figure>
 
 * **Default Grouping:** By default, vulnerabilities are grouped by programming language, followed by the vulnerability name. For instance: **`Python -> SQL Injection`**.
 * **Custom Grouping:** Users also have the option to group vulnerabilities by programming language followed by the file in which the vulnerability was detected, for example: **`Python -> main.py`**.
 
-<figure><img src="../../.gitbook/assets/image (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (1) (1).png" alt=""><figcaption></figcaption></figure>
 
 **Filtering Options:**
 

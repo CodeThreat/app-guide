@@ -2,7 +2,7 @@
 
 Beyond the standard filtering and grouping functionalities on the Issues Page, there's an advanced filtering option available to users. This feature, accessible via the button located at the top right of the page, offers more granular control over the displayed vulnerabilities.
 
-<figure><img src="../../.gitbook/assets/image (2).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (2) (1).png" alt=""><figcaption></figcaption></figure>
 
 **Advanced Filter Button:**
 

@@ -2,7 +2,7 @@
 
 This central hub offers a comprehensive view of the security posture across all your projects. At a glance, you can quickly assess the current number of unresolved security issues, the volume of codes scanned, and the number of projects under scrutiny. The dynamic Issue Trend graph provides insights into how security issues have evolved over time, letting you track the progress of resolutions. Additionally, the Risk Score offers a snapshot of the overall security health, and the Recent Scans list keeps you updated on the latest scanning activities. Dive into this dashboard to stay informed and proactive about your projects' security health.
 
-<figure><img src="../.gitbook/assets/image (3) (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (3) (1) (1).png" alt=""><figcaption></figcaption></figure>
 
 A metric representing the overall security health of the system. It is typically graded from A (best) to F (worst).
 
@@ -39,7 +39,7 @@ To determine the final "Risk Score," each of these factors is weighted based on 
 * **Description**: A list of the most recent scans, showcasing the project name and the status of the scan (e.g., "Scanning", "Successfully Finished", "In Queue").
 * **Usage**: Provides users with a quick overview of the latest scanning activity. This can be especially useful to check the status of recent scans and to understand which projects have been recently evaluated.
 
-<figure><img src="../.gitbook/assets/image (4) (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (4) (1) (1).png" alt=""><figcaption></figcaption></figure>
 
 ***
 

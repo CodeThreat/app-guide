@@ -14,7 +14,7 @@ Located on the main page, you'll find a "+" button. Clicking on this button will
 
 From the dropdown menu or list of options, select the "Create New Project" option. This will lead you to a new page dedicated to project creation.
 
-<figure><img src="../.gitbook/assets/image (1) (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (1) (1) (1).png" alt=""><figcaption></figcaption></figure>
 
 #### **4. Integration Service:**
 
@@ -34,7 +34,7 @@ If you choose an on-premises integration (often labeled as "Onprem"), you will h
 
     select this option for integration.
 
-<figure><img src="../.gitbook/assets/image (2) (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (2) (1) (1).png" alt=""><figcaption></figcaption></figure>
 
 #### 5. Proceed Through the Steps:
 

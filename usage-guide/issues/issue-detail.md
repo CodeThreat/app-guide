@@ -2,7 +2,7 @@
 
 On the Issue Detail Page, vulnerabilities that have been detected are listed. This interactive interface allows you to deeply inspect each vulnerability, view the associated code block, trace the vulnerability steps, and manage its status.
 
-<figure><img src="../../.gitbook/assets/image (3).png" alt="" width="375"><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (3) (1).png" alt="" width="375"><figcaption></figcaption></figure>
 
 On the left-hand side:
 
@@ -10,7 +10,7 @@ On the left-hand side:
 * Each category might represent a programming language or platform like **`Javascript`**, **`Csharp`**, etc.
 * Click on any vulnerability to get more insights.
 
-<figure><img src="../../.gitbook/assets/image (4).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (4) (1).png" alt=""><figcaption></figcaption></figure>
 
 Upon selecting a vulnerability:
 
@@ -22,7 +22,7 @@ On the right side:
 * The **Issue Trace** section displays the trace of the vulnerability, showing steps from the sink to the source.
 * By clicking on any of the steps (e.g., Invocation, Variable), the corresponding part of the code block will be highlighted, offering a clearer understanding of the vulnerability's flow within the code.
 
-<figure><img src="../../.gitbook/assets/image (5).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (5) (1).png" alt=""><figcaption></figcaption></figure>
 
 
 
@@ -75,13 +75,13 @@ For actions on multiple vulnerabilities:
 
 The "Description" section provides a comprehensive explanation of the identified vulnerability, along with relevant code snippets. It aims to give the user a clear understanding of the nature and potential impact of the issue at hand. By offering contextual examples, this section educates the user on the specific problem areas within the code that can be exploited.
 
-<figure><img src="../../.gitbook/assets/image (6).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (6) (1).png" alt=""><figcaption></figcaption></figure>
 
 #### **Mitigation**
 
 The "Mitigation" segment suggests remedies and preventive measures for the identified vulnerabilities. It presents both a description of the solution and sample code that rectifies the problem. This is essential for developers, allowing them to quickly address the issue and ensure the security of their software. It's a go-to guide for patching the vulnerabilities.
 
-<figure><img src="../../.gitbook/assets/image (7).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (7) (1).png" alt=""><figcaption></figcaption></figure>
 
 #### **Audit**
 
