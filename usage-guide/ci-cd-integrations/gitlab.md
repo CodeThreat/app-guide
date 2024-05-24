@@ -1,3 +1,7 @@
+---
+description: https://github.com/CodeThreat/codethreat-gitlab-plugin
+---
+
 # Gitlab
 
 Integrating CodeThreat with GitLab allows you to perform automatic security scans within your GitLab CI/CD workflows. This integration is configured via the **`.gitlab-ci.yml`** file, ensuring your project is continuously analyzed for security. Below is a detailed guide on how to configure CodeThreat integration for GitLab:

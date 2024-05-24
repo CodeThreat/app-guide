@@ -1,3 +1,7 @@
+---
+description: https://plugins.jenkins.io/codethreat-scanner/
+---
+
 # Jenkins
 
 Jenkins is an open-source automation server used to automate continuous integration and continuous delivery (CI/CD) workflows. The CodeThreat Jenkins plugin allows you to easily perform security scans within your Jenkins environment. Below are the steps for installing and configuring the CodeThreat Jenkins plugin, along with an example pipeline configuration:

@@ -1,3 +1,7 @@
+---
+description: https://github.com/marketplace/actions/codethreat-scanner
+---
+
 # GitHub Actions
 
 Integrating CodeThreat with GitHub Actions allows you to automatically analyze the security of your projects hosted on GitHub. To set up this integration, you need to create a YAML file within the .github/workflows directory in the root directory of your project. If the .github or workflows directory does not exist, you should create them.
