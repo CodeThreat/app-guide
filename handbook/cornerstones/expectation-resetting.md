@@ -1,6 +1,6 @@
-# Culture
+# Expectation Resetting
 
-## Expectation Resetting
+### Expectation Resetting
 
 We believe that clear and honest communication is the key to healthy relationships, whether among team members or with our users.
 
