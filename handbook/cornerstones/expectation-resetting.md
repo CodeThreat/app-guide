@@ -1,7 +1,5 @@
 # Expectation Resetting
 
-### Expectation Resetting
-
 We believe that clear and honest communication is the key to healthy relationships, whether among team members or with our users.
 
 Expectation resetting is about creating a transparent framework where everyone knows what to expect. This process helps in aligning services with realistic expectations, ensuring that whether the outcome exceeds or falls short, the experience remains positive and constructive.
@@ -19,11 +17,3 @@ In our journey, we have found that providing clarity and aligning expectations i
 In practical terms, expectation resetting involves regular check-ins, clear documentation, and open forums for discussion. We encourage our team members to express their expectations and concerns, and we work collaboratively to address them. This approach not only enhances our internal communication but also improves our interactions with users and clients.
 
 Through this method, we ensure that our product range, regardless of the channel, is delivered with clarity and precision. By granting autonomy and methods to individuals, and aligning expectations accordingly, we strengthen our immunity to extreme conditions and unforeseen challenges.
-
-**Diversity and Inclusion**
-
-We value diversity and inclusion, recognizing that varied perspectives strengthen our team. We prioritize respect and collaboration, ensuring every team member can contribute effectively, regardless of their background.
-
-**Work-Life Balance**
-
-Recognizing the importance of balancing work and personal life, we support flexible work arrangements and encourage taking breaks to maintain well-being. Our iterative approach ensures periods of intense work are followed by necessary downtime.
