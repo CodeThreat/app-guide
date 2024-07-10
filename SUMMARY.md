@@ -1,6 +1,6 @@
 # Table of contents
 
-* [💚 CodeThreat Company Handbook](README.md)
+* [CodeThreat Handbook](README.md)
   * [Our story](handbook/our-story.md)
   * [Purpose](handbook/purpose.md)
   * [How to use?](handbook/how-to-use.md)
