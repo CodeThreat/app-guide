@@ -1,5 +1,5 @@
 ---
-description: 'Last Updated: 07.10.2024 - Revision'
+description: 'Version: 1.0.1'
 cover: .gitbook/assets/1675159985994.jpg
 coverY: 0
 layout:
@@ -31,6 +31,7 @@ Our team dynamics evolves with us. As our teams grows and industry standards cha
 <summary>Revision List</summary>
 
 * **Version 1.0.0 (07/10/2024)**: Initial release of the CodeThreat Handbook, covering all major sections and initial product concepts.
+* **Version 1.1.0 (07/10/2024)**: Added - Company Policies&#x20;
 
 </details>
 
