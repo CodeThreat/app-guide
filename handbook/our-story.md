@@ -18,4 +18,4 @@ As a team that began with a research focus, we developed unique approaches to pr
 
 The purpose of this handbook is to document and maintain the essence of our practices and solutions. Whether our team consists of five or ten people, we believe the solutions we implement go beyond products. They represent significant team efforts. This handbook ensures that both new and current team members can understand and contribute to our transparent workflows, maintain our systems, and most importantly, continue to provide value to our users efficiently.
 
-<figure><img src="../.gitbook/assets/image.png" alt=""><figcaption><p>message counts of our communication platform.</p></figcaption></figure>
+<figure><img src="../.gitbook/assets/image.png" alt=""><figcaption><p>100k message in our discord  </p></figcaption></figure>
