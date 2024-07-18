@@ -21,6 +21,7 @@
 
 ## Usage Guide
 
+* [API Documentation](usage-guide/api-documentation.md)
 * [CT Server Installation](usage-guide/ct-server-installation/README.md)
   * [Server Setup](usage-guide/ct-server-installation/server-setup.md)
   * [Installation](usage-guide/ct-server-installation/installation.md)

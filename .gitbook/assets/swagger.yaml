@@ -1,0 +1,2568 @@
+openapi: 3.0.0
+info:
+  title: CodeThreat API
+  version: 1.0.0
+  description: |
+    ## REST API Overview
+    CodeThreat REST API is based on the JSON:API standard, defined in OpenAPI 3.
+
+    ## API URL
+    The base URL for CodeThreat depends on the on-premise installation you are using and includes 
+    a prefix route for all requests that `/api`. For example, if your application runs at 
+    https://{baseUrl}, you can build your request URL like this:
+
+    `https://{baseUrl}/api/requested-path.`
+
+    ## About authentication
+    To use this API, you need to authenticate your app using the user's access tokens.
+    After logging into the app, navigate to Organization Settings > Access Token
+    and click the "New Token" button to generate a fully accessible user token.
+
+    When making requests, include an Authorization header as follows:
+
+    ```bash
+    Authorization: Bearer access_token
+    ```
+    Requests made without a token will receive a 401 Unauthorized response:
+
+    - **Status Code:** 401 Unauthorized
+
+      ```json
+      {
+          "status": 401,
+          "code": "Unauthorized",
+          "message": "Invalid token"
+      }
+      ```
+    ## ReScan Mechanism
+    
+    The rescan mechanism is a manual trigger use to easily scan third-party integrated projects. It operates when repositories are accessible with the required credentials and are properly connected to the CodeThreat app. For instance, projects on GitHub or Azure can be accessed without needing to upload the source code.
+  
+    To determine if a project is rescanable, clients can check a field returned with project data
+    using `project/list` or `project` GET requests. Within the project data, there is a field called `isRepositorySourceAccessible`; if this field is true, it indicates that the project can be rescannable using the `integration/start` endpoints.
+    
+
+servers:
+  - url: <baseURL>/api
+    description: Prefix for all routes
+    
+paths:
+  /organization/add:
+    post:
+      summary: Add a new organization
+      description: This endpoint is used to add a new organization to the application. It accepts the 'orgname' field in the body. If no organization with this name exists, a new organization is created immediately.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orgname:
+                  type: string
+                  description: The name of the organization to be added
+              required:
+                - orgname
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessfullyPostResponse'
+        '400':
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                invalid_characters:
+                  summary: Invalid characters
+                  value:
+                    code: 400
+                    message: Organization name cannot contain symbols and whitespace, except alphanumeric, dash, and underscore.
+                deactivated:
+                  summary: Deactivated organization
+                  value:
+                    code: 400
+                    message: ${body.orgname} organization is currently deactivated. Either hard delete or activate it in the organization section.
+                duplicate:
+                  summary: Duplicate organization
+                  value:
+                    code: 400
+                    message: Organization name needs to be unique.
+                creation_failed:
+                  summary: Creation failed
+                  value:
+                    code: 400
+                    message: Cannot create an organization.
+  /organization/list:
+    get:
+      summary: List organizations
+      description: |
+        Retrieves a list of organizations accessible to the user. Use the 'search' parameter in the query string to filter organizations by name.
+      parameters:
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Filter organizations by name (alphanumeric, dash, underscore, and dot allowed).
+          example: "example_org"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                example:
+                  - "Organization1"
+                  - "Organization2"
+        '400':
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                invalid_characters:
+                  summary: Invalid characters
+                  value:
+                    code: 400
+                    message: Search text cannot contain symbols except alphanumeric, dash, underscore, and dot.
+                list_failed:
+                  summary: List operation failed
+                  value:
+                    code: 400
+                    message: Unable to retrieve organization list.
+  /project/add:
+    post:
+      summary: Add a new project
+      description: |
+        Creates a new 'upload' type project that is ready for analysis when triggered at the scan/start endpoint.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                project_name:
+                  type: string
+                  description: "The name of the project used in generation. Must be unique within the organization."
+                  maxLength: 1000
+                  minLength: 3
+                description:
+                  type: string
+                  description: "A brief summary of the project's purpose."
+                  maxLength: 5000
+                tags:
+                  type: array
+                  items:
+                    type: string
+                  maxItems: 5
+                  description: "Tags to categorize and group the projects being maintained."
+              required:
+                - project_name
+        description: Description of the request body
+
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessfullyPostResponse'
+        '400':
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                project_already_created:
+                  summary: Project already created
+                  value:
+                    code: 400
+                    message: Project already exists.
+                missing_field:
+                  summary: Missing required field
+                  value:
+                    code: 400
+                    message: "Missing required field: 'project_name'. Please provide a valid project name."
+                name_too_long:
+                  summary: Project name too long
+                  value:
+                    code: 400
+                    message: Project name cannot be longer than 1000 characters.
+                name_too_short:
+                  summary: Project name too short
+                  value:
+                    code: 400
+                    message: Project name cannot be shorter than 3 characters.
+                illegal_characters:
+                  summary: Illegal characters in project name
+                  value:
+                    code: 400
+                    message: "Illegal characters in project name. Avoid using: \\, |, \", ', ?, ~, <, >, :, .., `"
+                description_too_long:
+                  summary: Description too long
+                  value:
+                    code: 400
+                    message: Description length cannot exceed 5000 characters.
+                tags_limit_exceeded:
+                  summary: Tags limit exceeded
+                  value:
+                    code: 400
+                    message: "Limit exceeded: 'tags' maximum length is 5."
+  /projects:
+    get:
+      summary: List projects
+      description: Retrieves a list of projects based on the provided parameters.
+      parameters:
+        - in: query
+          name: pid
+          schema:
+            type: string
+          description: Page ID for pagination.
+          example: "1"
+          required: false
+        - in: query
+          name: page
+          schema:
+            type: string
+          description: Page number for pagination.
+          example: "1"
+          required: false
+        - in: query
+          name: pageSize
+          schema:
+            type: string
+            maximum: 500
+          description: Number of projects per page, with a maximum limit of 500.
+          example: "50"
+          required: false          
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Filter projects by name (alphanumeric, dash, underscore, and dot allowed).
+          example: "example_project"
+          required: false        
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum: [name, size_desc, size_asc, scan_date]
+          description: "Criteria to sort projects: by name, size (descending/ascending), or scan date (newest first)."
+          example: "name"
+          required: false
+        - in: query
+          name: q
+          schema:
+            type: string
+          description: |
+            Base64 encoded filter criteria for projects:
+            - type: upload, git, github, gitlab, azure, bitbucket, jenkins
+            - owner: Owner's username
+            - languages: ["java", "javascript", "csharp", ...]
+            - state: failure, run, stop, end
+          example: "base64_encoded_string"
+          required: false
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProjectResponse'
+        '400':
+          description: Error response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+              examples:
+                project_list_failed:
+                  summary: Project list retrieval failed
+                  value:
+                    code: 400
+                    message: Cannot get project list.
+                sca_data_error:
+                  summary: SCA data addition failed
+                  value:
+                    code: 400
+                    message: Cannot add SCA data to project list.
+                query_error:
+                  summary: Project query error
+                  value:
+                    code: 400
+                    message: Error occurred in project query.
+                sort_query_error:
+                  summary: Sort query creation error
+                  value:
+                    code: 400
+                    message: Inappropriate data for creating sort query for project.
+                invalid_search_text:
+                  summary: Invalid search text
+                  value:
+                    code: 400
+                    message: Search text cannot contain symbols except alphanumeric, dash, underscore, and dot.
+                search_text_too_long:
+                  summary: Search text too long
+                  value:
+                    code: 400
+                    message: Max search query length is 40.
+                page_size_exceeded:
+                  summary: Page size limit exceeded
+                  value:
+                    code: 400
+                    message: Page size maximum limit cannot exceed 500.
+  /project:
+    get:
+      summary: Retrieve project details
+      description: Retrieves detailed information about a specific project, including branch scan statistics and values.
+      parameters:
+        - in: query
+          name: branch
+          schema:
+            type: string
+          description: Retrieve project-related branch scan statistics and values. Must provide a valid branch name.
+          required: false
+          example: "main"
+        - in: query
+          name: key
+          schema:
+            type: string
+          description: Project name to retrieve the specific project details. Must provide a valid project name.
+          required: true
+          example: "example_project"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema: 
+               $ref: '#/components/schemas/ProjectResponse'
+        '400':
+          description: Error response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+              examples:
+                not_found:
+                  summary: Project not found
+                  value:
+                    code: 404
+                    message: Not Found.
+                project_retrieval_failed:
+                  summary: Project retrieval error
+                  value:
+                    code: 400
+                    message: "Error occurred: Cannot get project."
+                access_denied:
+                  summary: Access denied
+                  value:
+                    code: 403
+                    message: Access denied.
+  /scan/start:
+    post:
+      summary: Start a new scan
+      description: |
+        Only upload type projects can be scanned. The related project should be created via the `project/add` endpoint before sending this request with the related value.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                upfile:
+                  type: string
+                  format: binary
+                  description: Uploaded file object
+                project:
+                  type: string
+                  description: Project under which the uploaded file will be analyzed
+                branch:
+                  type: string
+                  description: Branch under which the uploaded file will be analyzed
+                policy_id:
+                  type: string
+                  description: Scope under which the analysis should be processed
+              required:
+                - project
+                - upfile
+      responses:
+        '200':
+          description: Scan started successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                  message:
+                    type: string
+                  scan_id:
+                    type: string
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+              examples:
+                MissingFormValue:
+                  value:
+                    code: 400
+                    message: "Missing form value: 'project | upfile' is missing."
+                GetProjectError:
+                  value:
+                    code: 400
+                    message: "Error Occurred: Cannot get project."
+                MaxUploadSizeExceeded:
+                  value:
+                    code: 400
+                    message: Maximum upload size exceeded (default is 10GB but it can be edited in App Settings > Max Upload Limit).
+                TagExceedLength:
+                  value:
+                    code: 400
+                    message: One of tag exceeded maximum length (500 characters).
+                ScanEnvError:
+                  value:
+                    code: 400
+                    message: "Error Occurred: Scan environment could not be established."
+                UnknownFileType:
+                  value:
+                    code: 400
+                    message: Unknown file type.
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+              example:
+                code: 403
+                message: Access denied.
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+              example:
+                code: 404
+                message: "Not Found: Create a project first which you want to scan."
+  /scan/status/{scanId}:
+    get:
+      summary: Get scan status
+      description: Retrieve the status and details of a scan using its ID.
+      parameters:
+        - name: scanId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: URL path to provide the scan ID.
+      responses:
+        '200':
+          description: Success response with scan status details.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  progress_data:
+                    type: object
+                    properties:
+                      progress:
+                        type: integer
+                        description: Progress percentage
+                      currentdir:
+                        type: string
+                        nullable: true
+                      current_analysis:
+                        type: string
+                        description: Current analysis type
+                      current_weakness:
+                        type: string
+                        description: Current weakness being analyzed
+                  tags:
+                    type: object
+                    properties:
+                      project_name:
+                        type: string
+                      starter:
+                        type: string
+                      filename:
+                        type: string
+                      policy_id:
+                        type: string
+                      branch:
+                        type: string
+                      commitId:
+                        type: string
+                      committer:
+                        type: string
+                      commitMessage:
+                        type: string
+                      policy_title:
+                        type: string
+                  schemaVersion:
+                    type: string
+                  id:
+                    type: string
+                  started_at:
+                    type: integer
+                    description: Timestamp when the scan started
+                  ended_at:
+                    type: integer
+                    description: Timestamp when the scan ended
+                  state:
+                    type: string
+                  loc:
+                    type: integer
+                  nfiles:
+                    type: integer
+                  uid:
+                    type: string
+                  fixcosts:
+                    type: string
+                    nullable: true
+                  trustlevels:
+                    type: string
+                    nullable: true
+                  labels:
+                    type: object
+                    additionalProperties:
+                      type: integer
+                  impacts:
+                    type: object
+                    additionalProperties:
+                      type: integer
+                  rootcauses:
+                    type: object
+                    additionalProperties:
+                      type: integer
+                  riskscore:
+                    type: integer
+                  logs:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        logType:
+                          type: string
+                        message:
+                          type: string
+                        create_date:
+                          type: string
+                          format: date-time
+                        update_date:
+                          type: string
+                          format: date-time
+                  license_detection:
+                    type: object
+                    properties:
+                      low:
+                        type: integer
+                      high:
+                        type: integer
+                      unknown:
+                        type: integer
+                  sca_severities:
+                    type: object
+                    properties:
+                      high:
+                        type: integer
+                      critical:
+                        type: integer
+                      medium:
+                        type: integer
+                  sast_severities:
+                    type: object
+                    properties:
+                      critical:
+                        type: integer
+                      high:
+                        type: integer
+                      medium:
+                        type: integer
+                      low:
+                        type: integer
+        '400':
+          description: |
+            - Missing Query: `<scanId>` is required.
+            - Error occurred: Cannot get scan status.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+        '403':
+          description: Access denied
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+        '404':
+          description: Scan Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+  /scanlog/issues:
+    get:
+      summary: Get scan issues
+      description: Retrieve issues related to a specific scan using its ID with optional filters.
+      parameters:
+        - name: pid
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Page ID for pagination
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Page ID for pagination
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            maximum: 500
+          description: Page size for pagination
+        - name: sid
+          in: query
+          required: false
+          schema:
+            type: string
+          description: A scan ID value that directly returns related to this scan
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+            format: base64
+          description: |
+            A value that uses filtering to project. 
+            Example base64 encoded JSON:
+            ```json
+            {
+              "severity": ["critical", "high", "low", "medium"],
+              "trustlevel": ["high", "low", "medium"],
+              "fixcost": ["high", "low", "medium"],
+              "languages": ["csharp", "javascript", "java"],
+              "status": ["Open", "Closed", "Accepted", "ReCheck", "FalsePositive"],
+              "issuename": "SQL Injection",
+              "projectName": "example-project",
+              "assignee": ["username1", "username2"],
+              "filename": ["file.ts", "file.cs"],
+              "scandate": [startTimestamp, endTimestamp]
+            }
+            ```
+      responses:
+        '200':
+          description: Successful response with scan issues details.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  issue_state:
+                    type: object
+                    properties:
+                      status:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                          description:
+                            type: string
+                      schemaVersion:
+                        type: string
+                      id:
+                        type: string
+                      project_name:
+                        type: string
+                      rule_id:
+                        type: string
+                      issue_id:
+                        type: string
+                      weakness_id:
+                        type: string
+                      scan_id:
+                        type: string
+                      ticket:
+                        type: object
+                      tags:
+                        type: object
+                      severity:
+                        type: string
+                      fixcost:
+                        type: string
+                      history:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            type:
+                              type: string
+                            scan_id:
+                              type: string
+                            status:
+                              type: string
+                            date:
+                              type: integer
+                      relations:
+                        type: object
+                        properties:
+                          scanBranches:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                branch_name:
+                                  type: string
+                                scans:
+                                  type: array
+                                  items:
+                                    type: string
+                  kb_fields:
+                    type: object
+                    properties:
+                      impacts:
+                        type: array
+                        items:
+                          type: string
+                      labels:
+                        type: array
+                        items:
+                          type: string
+                      rootcauses:
+                        type: array
+                        items:
+                          type: string
+                      standards:
+                        type: array
+                        items:
+                          type: string
+                      references:
+                        type: array
+                        items:
+                          type: string
+                      platformnotes:
+                        type: object
+                        additionalProperties:
+                          type: object
+                          properties:
+                            description:
+                              type: string
+                            mitigation:
+                              type: string
+                      summary:
+                        type: object
+                        additionalProperties:
+                          type: string
+                      title:
+                        type: object
+                        additionalProperties:
+                          type: string
+                      trustlevel:
+                        type: string
+                  flow_steps:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code_snippet:
+                          type: object
+                          properties:
+                            text:
+                              type: string
+                            start_line:
+                              type: integer
+                            end_line:
+                              type: integer
+                        document_name:
+                          type: string
+                        document_path:
+                          type: string
+                        project_name:
+                          type: string
+                          nullable: true
+                        start_linenumber:
+                          type: integer
+                        end_linenumber:
+                          type: integer
+                        start_codespan:
+                          type: integer
+                        end_codespan:
+                          type: integer
+                        step_type:
+                          type: string
+                        step_text:
+                          type: string
+                        document_extension:
+                          type: string
+                  lang:
+                    type: string
+        '400':
+          description: |
+            - Page size max limit cannot be more than 500.
+            - Filter search cannot contain symbols except alphanumeric, dash, underscore, and dot notations.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+        '403':
+          description: Access denied
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+  /scan/stop:
+    post:
+      summary: Stop an active scan
+      description: Stops an active scan immediately if the provided scan ID exists.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                scan_id:
+                  type: string
+                  description: The ID of the scan to be stopped
+              required:
+                - scan_id
+      responses:
+        '200':
+          description: Scan stopped successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: "successfull"
+                  error:
+                    type: boolean
+                    example: false
+        '400':
+          description: |
+            - Missing body parameter: <scan_id>
+            - Error occurred while trying to stop scan
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+        '403':
+          description: Access denied
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+        '404':
+          description: Scan not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+  /policy/list:
+    get:
+      summary: Retrieve all policies
+      description: Retrieves all policies created in the organization, including default bundled policies.
+      parameters:
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Filter policies by policy title
+      responses:
+        '200':
+          description: List of policies
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                 $ref: '#/components/schemas/PolicyResponse'
+        '400':
+          description: |
+            - Search text cannot contain symbols except alphanumeric, dash, underscore, and dot notations
+            - Error occurred in policy list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+        '403':
+          description: Access denied
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+  /policy/{policyId}:
+    get:
+      summary: Get selected policy
+      description: Retrieve policy by given payload
+      parameters:
+        - in: path
+          name: policyId
+          required: true
+          schema:
+            type: string
+          description: Filter policies by policy title
+      responses:
+        '200':
+          description: Policy which demanded
+          content:
+            application/json:
+              schema:
+                 $ref: '#/components/schemas/PolicyResponse'
+        '400':
+            description: Error response
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Error'
+                examples:
+                  illegal_string:
+                    summary: Illegal String
+                    value:
+                      code: 400
+                      message:"" Illegal characters in the policy ID. Allowed characters: alphanumeric, dash, underscore, and "@"."
+                  error_occurred:
+                    summary: Error occurred
+                    value:
+                      code: 400
+                      message: An error occurred while processing the policy list request.
+                  missing_policyId:
+                    summary: Missing Policy ID
+                    value:
+                      code: 400
+                      message: Policy ID is required but missing in the request.
+        '403':
+            description: Access denied
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Error'
+                examples:
+                  access_denied:
+                    summary: Access Denied
+                    value:
+                      code: 403
+                      message: Access to policy list is denied due to insufficient permissions.
+        '404':
+            description: Policy not found
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Error'
+                examples:
+                  policy_not_found:
+                    summary: Policy Not Found
+                    value:
+                      code: 404
+                      message: The requested policy was not found.
+  /integration/git/set:
+    post:
+      summary: Create a git connected project
+      description: Create a git-connected project with given parameters.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                branch:
+                  type: string
+                  description: Repository's default branch for standard analysis
+                git:
+                  type: object
+                  properties:
+                    password:
+                      type: string
+                      description: Password for the git server connection
+                    url:
+                      type: string
+                      description: Git repository URL
+                    username:
+                      type: string
+                      description: Username for the git server connection
+                  required: 
+                    - url
+                policy_id:
+                  type: string
+                  description: Project's default policy for standard analysis
+                project_name:
+                  type: string
+                  description: Unique project name within the organization
+                  minLength: 3
+                  maxLength: 1000
+                  example: my-project
+                tags:
+                  type: array
+                  items:
+                    type: string
+                  maxItems: 5
+                  description: Tags to categorize and group project
+              required: 
+                    - project_name
+                    - policy_id
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    description: Indicates if an error occurred
+                  message:
+                    type: string
+                    description: Human-readable message about project creation status
+                  scan_id:
+                    type: string
+                    nullable: true
+                    description: ID of the started scan (if scan started successfully)
+              examples:
+                scan_limit_not_exceeded:
+                  value:
+                    error: false
+                    message: Project created and scan started successfully.
+                    scan_id: scanId
+                scan_limit_exceeded:
+                  value:
+                    error: false
+                    message: Project created but scan not started due to exceed weekly scan limitations.
+                    scan_id: null
+        '400':
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                could_not_generate_project:
+                  summary: Could not generate git project
+                  value:
+                    code: 400
+                    message: Failed to generate the git project.
+                connection_error:
+                  summary: Connection Error
+                  value:
+                    code: 400
+                    message: Could not access the git server. Please check your connection.
+                missing_required_field_url_policyId:
+                  $ref: '#/components/examples/missing_required_field_url_policyId'
+                illegal_string_branch:
+                  $ref: '#/components/examples/illegal_string_branch'
+                project_already_created:
+                  $ref: '#/components/examples/project_already_created'
+                missing_required_field_project_name:
+                  $ref: '#/components/examples/missing_required_field_project_name'
+                project_name_length:
+                  $ref: '#/components/examples/project_name_length'
+                illegal_string_project_name:
+                  $ref: '#/components/examples/illegal_string_project_name'
+                description_length:
+                  $ref: '#/components/examples/description_length'
+                tags_limit_exceeded:
+                  $ref: '#/components/examples/tags_limit_exceeded'
+        '403':
+          description: Access denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                access_denied:
+                  summary: Access Denied
+                  value:
+                    code: 403
+                    message: Access Denied
+  /integration/github/set:
+    post:
+      summary: Create a GitHub connected project
+      description: Create a GitHub-connected project with given parameters.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                repoId:
+                  type: string
+                  description: GitHub repository id and name combined as string concatenated.
+                  format: '${github.repository.name}:${github.repository.id}'
+                  example: "repo_name:1234id"
+                type:
+                  type: string
+                  enum: [public, private]
+                  description: Repositories view information (public or private)
+                account:
+                  type: string
+                  description: Related repository owner's GitHub login
+                  format: '${github.repository.owner.login}'
+                branch:
+                  type: string
+                  description: Default branch of the project for standard analysis.
+                  example: main  
+                policy_id:
+                  type: string
+                  description: Project's default policy for standard analysis
+                tags:
+                  type: array
+                  items:
+                    type: string
+                  description: Tags to categorize and group projects
+              required:
+                - repoId
+                - type
+                - account
+                - policy_id
+                - branch
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    description: Indicates if an error occurred
+                  message:
+                    type: string
+                    description: Human-readable message about project creation status
+                  scan_id:
+                    type: string
+                    nullable: true
+                    description: ID of the started scan (if scan started successfully)
+              examples:
+                scan_limit_exceeded:
+                  value:
+                    error: false
+                    message: Project created but scan not started due to exceed weekly scan limitations.
+                    scan_id: null
+                scan_limit_not_exceeded:
+                  value:
+                    error: false
+                    message: Project created and scan started successfully.
+                    scan_id: scanId
+        '400':
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                could_not_generate_github_project:
+                  summary: Could not generate GitHub project
+                  value:
+                    code: 400
+                    message: Failed to generate the GitHub project.
+                connection_error:
+                  summary: Connection Error
+                  value:
+                    code: 400
+                    message: Could not access the GitHub server. Please check your connection.
+                repository_view_information_mismatch:
+                  summary: Repository view information mismatch
+                  value:
+                    code: 400
+                    message: Repository view information provided does not match expected format.
+                illegal_string_branch:
+                  summary: Illegal String
+                  value:
+                    code: 400
+                    message: "Illegal characters in the branch name. Allowed characters: alphanumeric, dash, underscore."
+                github_repository_not_found:
+                  summary: GitHub Repository Not Found
+                  value:
+                    code: 404
+                    message: GitHub repository not found.
+                project_already_exists:
+                  summary: Project Already Exists
+                  value:
+                    code: 409
+                    message: "Cannot create project: a project with the same type already exists."
+        '403':
+          description: Access denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                access_denied:
+                  summary: Access Denied
+                  value:
+                    code: 403
+                    message: Access Denied
+  /integration/gitlab/set:
+    post:
+      summary: Create a GitLab connected project
+      description: Create a GitLab-connected project with given parameters.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                repoId:
+                  type: string
+                  description: GitLab repository id and name combined as string concatenated.
+                  format: '${GitLab.repository.name}:${GitLab.repository.id}'
+                  example: "repo_name:1234id"
+                branch:
+                  type: string
+                  description: Default branch of the project for standard analysis.
+                  example: main  
+                type:
+                  type: string
+                  enum: [public, private]
+                  description: Repositories view information (public or private)
+                account:
+                  type: string
+                  description: Related repository owner's GitLab login
+                  format: '${gitlab.account.id}'
+                policy_id:
+                  type: string
+                  description: Project's default policy for standard analysis
+                tags:
+                  type: array
+                  items:
+                    type: string
+                  description: Tags to categorize and group projects
+              required:
+                - repoId
+                - type
+                - account
+                - policy_id
+                - branch
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    description: Indicates if an error occurred
+                  message:
+                    type: string
+                    description: Human-readable message about project creation status
+                  scan_id:
+                    type: string
+                    nullable: true
+                    description: ID of the started scan (if scan started successfully)
+              examples:
+                scan_limit_exceeded:
+                  value:
+                    error: false
+                    message: Project created but scan not started due to exceed weekly scan limitations.
+                    scan_id: null
+                scan_limit_not_exceeded:
+                  value:
+                    error: false
+                    message: Project created and scan started successfully.
+                    scan_id: scanId
+        '400':
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                could_not_generate_gitlab_project:
+                  summary: Could not generate gitlab project
+                  value:
+                    code: 400
+                    message: Failed to generate the GitHub project.
+                connection_error:
+                  summary: Connection Error
+                  value:
+                    code: 400
+                    message: Could not access the gitlab account. Please check your connection.
+                repository_view_information_mismatch:
+                  summary: Repository view information mismatch
+                  value:
+                    code: 400
+                    message: Repository view information provided does not match expected format.
+                illegal_string_branch:
+                  summary: Illegal String
+                  value:
+                    code: 400
+                    message: "Illegal characters in the branch name. Allowed characters: alphanumeric, dash, underscore."
+                gitlab_repository_not_found:
+                  summary: GitLab Repository Not Found
+                  value:
+                    code: 404
+                    message: GitLab Repository Not Found.
+                project_already_exists:
+                  summary: Project Already Exists
+                  value:
+                    code: 409
+                    message: "Cannot create project: a project with the same type already exists."
+        '403':
+          description: Access denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                access_denied:
+                  summary: Access Denied
+                  value:
+                    code: 403
+                    message: Access Denied
+  /integration/azure/set:
+    post:
+      summary: Create a Azure connected project
+      description: Create a Azure-connected project with given parameters.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                repoId:
+                  type: string
+                  description: "Depends on repository type, if it is Git type repository it wil formatted like, `${azureRepository.name}:${azureRepository.,d}:${azureRepository.project.id}` but if it is Tfvc project, it will formetted like: `${tfvcItem.name}:${azureRepository.id}`."
+                  example: "repo_name:1234id:projId | item_name:item_id"
+                type:
+                  type: string
+                  enum: [TfsGit, TfsVersionControl, git, tfs]
+                  description: Repositories source control type 
+                branch:
+                  type: string
+                  description: Default branch of the project for standard analysis.
+                  example: main
+                account:
+                  type: string
+                  description: Related repository owner's Azure account
+                  format: '${azureAccount.accountName}'
+                policy_id:
+                  type: string
+                  description: Project's default policy for standard analysis
+                path:
+                  type: string
+                  description: It will required only importing tfvc project.
+                  format: ${azureItem.path}
+                tags:
+                  type: array
+                  items:
+                    type: string
+                  description: Tags to categorize and group projects
+              required:
+                - repoId
+                - type
+                - account
+                - policy_id
+                - branch
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    description: Indicates if an error occurred
+                  message:
+                    type: string
+                    description: Human-readable message about project creation status
+                  scan_id:
+                    type: string
+                    nullable: true
+                    description: ID of the started scan (if scan started successfully)
+              examples:
+                scan_limit_exceeded:
+                  value:
+                    error: false
+                    message: Project created but scan not started due to exceed weekly scan limitations.
+                    scan_id: null
+                scan_limit_not_exceeded:
+                  value:
+                    error: false
+                    message: Project created and scan started successfully.
+                    scan_id: scanId
+        '400':
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                could_not_generate_gitlab_project:
+                  summary: Could not generate gitlab project
+                  value:
+                    code: 400
+                    message: Failed to generate the GitHub project.
+                connection_error:
+                  summary: Connection Error
+                  value:
+                    code: 400
+                    message: Could not access the gitlab account. Please check your connection.
+                repository_view_information_mismatch:
+                  summary: Repository view information mismatch
+                  value:
+                    code: 400
+                    message: Repository view information provided does not match expected format.
+                illegal_string_branch:
+                  summary: Illegal String
+                  value:
+                    code: 400
+                    message: "Illegal characters in the branch name. Allowed characters: alphanumeric, dash, underscore."
+                gitlab_repository_not_found:
+                  summary: GitLab Repository Not Found
+                  value:
+                    code: 404
+                    message: GitLab Repository Not Found.
+                project_already_exists:
+                  summary: Project Already Exists
+                  value:
+                    code: 409
+                    message: "Cannot create project: a project with the same type already exists."
+        '403':
+          description: Access denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                access_denied:
+                  summary: Access Denied
+                  value:
+                    code: 403
+                    message: Access Denied
+  /integration/bitbucket/set:
+    post:
+      summary: Create a Bitbucket connected project
+      description: Create a Bitbucket connected project with given parameters.
+      parameters:
+        - name: server
+          in: query
+          description: If the connection is coming from a Bitbucket server, this should be true. If cloud, it should be false.
+          required: true
+          schema:
+            type: boolean
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - repository
+                - type
+                - projectName
+                - projectKey
+                - account
+                - policy_id
+                - branch
+              properties:
+                repository:
+                  type: string
+                  description: Bitbucket repository name.
+                  example: my-repo
+                type:
+                  type: string
+                  enum: [public, private, Bitbucket Server Project, Bitbucket Server User]
+                  description: Repository view information.
+                  example: public
+                projectName:
+                  type: string
+                  description: Name for project generation in the application.
+                  example: my-repo_my-repo
+                  format: "${bitbucketRepository.name}_${bitbucketRepository.name}"
+                projectKey:
+                  type: string
+                  description: Used for connection URL generation.
+                  example: PROJKEY
+                account:
+                  type: string
+                  description: Depends on environment; if Bitbucket server, use `bitbucketProject.name`. If cloud, use `bitbucketWorkspace.account`
+                  example: my-project
+                policy_id:
+                  type: string
+                  description: Default policy ID for standard analysis.
+                  example: 7xoPVRFf6l86
+                branch:
+                  type: string
+                  description: Default branch of the project for standard analysis.
+                  example: main
+                workspace:
+                  type: string
+                  description: Account's workspace information. Required if in a cloud environment.
+                  example: my-workspace
+                tags:
+                  type: array
+                  items:
+                    type: string
+                  description: Tags to categorize and group projects.
+                  example: "[tag1, tag2]"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    description: Indicates if there was an error.
+                  message:
+                    type: string
+                    description: Detailed message about the project creation status.
+                  scan_id:
+                    type: string
+                    nullable: true
+                    description: ID of the initiated scan, if applicable.
+              examples:
+                scan_not_started:
+                  summary: Project created but scan not started
+                  value:
+                    error: false
+                    message: Project created but scan not started due to exceeding weekly scan limitations.
+                    scan_id: null
+                scan_started:
+                  summary: Project created and scan started
+                  value:
+                    error: false
+                    message: Project created and scan started successfully.
+                    scan_id: scan12345
+        '400':
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                could_not_generate:
+                  summary: Could not generate Bitbucket project
+                  value:
+                    code: 400
+                    message: Could not generate Bitbucket project due to an unspecified error.
+                connection_error:
+                  summary: Connection Error
+                  value:
+                    code: 400
+                    message: "Connection Error: Can't Access Bitbucket Server."
+                repository_view_mismatch:
+                  summary: Repository view information mismatch
+                  value:
+                    code: 400
+                    message: Repository view information does not match expected values.
+                illegal_string:
+                  summary: Illegal String
+                  value:
+                    code: 400
+                    message: Illegal characters in the request.
+                repo_not_found:
+                  summary: Bitbucket repository not found
+                  value:
+                    code: 404
+                    message: Bitbucket repository not found.
+                project_already_exists:
+                  summary: Project already exists
+                  value:
+                    code: 409
+                    message: "Cannot create project: A project with the same type already exists."
+                missing_project_name:
+                  summary: Missing project name
+                  value:
+                    code: 400
+                    message: "Missing required field: 'project_name'. Please provide a valid project name."
+                project_name_too_long:
+                  summary: Project name too long
+                  value:
+                    code: 400
+                    message: Project name cannot be longer than 1000 characters.
+                project_name_too_short:
+                  summary: Project name too short
+                  value:
+                    code: 400
+                    message: Project name cannot be shorter than 3 characters.
+                illegal_project_name:
+                  summary: Illegal project name
+                  value:
+                    code: 400
+                    message: Illegal characters in the project name.
+                description_too_long:
+                  summary: Description too long
+                  value:
+                    code: 400
+                    message: Description length cannot exceed 5000 characters.
+                tags_limit_exceeded:
+                  summary: Tags limit exceeded
+                  value:
+                    code: 400
+                    message: "Limit exceeded: 'tags' maximum length is 5."
+                access_denied:
+                  summary: Access denied
+                  value:
+                    code: 403
+                    message: Access denied.
+  /integration/azure/start:
+    post:
+      summary: Trigger an existing Azure project scan
+      description: Trigger a scan for an existing Azure project with the provided parameters.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - project
+              properties:
+                project:
+                  type: string
+                  description: The project to be analyzed.
+                branch:
+                  type: string
+                  description: Optional branch parameter for analyzing a different branch. Defaults to the project's default branch if not provided.
+                policy_id:
+                  type: string
+                  description: Optional policy_id parameter for analyzing the project with a different policy scope. Defaults to the project's default policy_id if not provided.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message.
+                    example: Scan started successfully.
+                  scan_id:
+                    type: string
+                    description: ID of the initiated scan.
+                    example: scan1234
+        '400':
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                missing_fields:
+                  summary: Missing fields
+                  value:
+                    code: 400
+                    message: "Missing Fields: Send { project: string } you want to scan."
+                access_error:
+                  summary: Access error
+                  value:
+                    code: 400
+                    message: "Error Occurred: Could not access azure account."
+                azure_not_set:
+                  summary: Azure connection not set
+                  value:
+                    code: 400
+                    message: Azure connection is not set.
+                project_not_found:
+                  summary: Project not found
+                  value:
+                    code: 404
+                    message: "Create a project first. Which you want to scan."
+                scan_trigger_error:
+                  summary: Scan trigger error
+                  value:
+                    code: 400
+                    message: Error occurred in scan trigger mechanism.
+                illegal_string:
+                  summary: Illegal string
+                  value:
+                    code: 400
+                    message: "Illegal String: <project_name | policy_id | filename | branch>. Don't use these symbols: \\, |, \", ', ?, ~, <, >, :, .., `."
+        '403':
+          description: Access denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                access_denied:
+                  summary: Access denied
+                  value:
+                    code: 403
+                    message: Access denied.
+  /integration/bitbucket/start:
+    post:
+      summary: Trigger an existing Bitbucket project scan
+      description: Trigger a scan for an existing Bitbucket project with the provided parameters.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - project
+              properties:
+                project:
+                  type: string
+                  description: The project to be analyzed.
+                branch:
+                  type: string
+                  description: Optional branch parameter for analyzing a different branch. Defaults to the project's default branch if not provided.
+                policy_id:
+                  type: string
+                  description: Optional policy_id parameter for analyzing the project with a different policy scope. Defaults to the project's default policy_id if not provided.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message.
+                    example: Scan started successfully.
+                  scan_id:
+                    type: string
+                    description: ID of the initiated scan.
+                    example: scan1234
+        '400':
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                missing_fields:
+                  summary: Missing fields
+                  value:
+                    code: 400
+                    message: "Missing Fields: Send { project: string } you want to scan."
+                access_error:
+                  summary: Access error
+                  value:
+                    code: 400
+                    message: "Error Occurred: Could not access bitbucket account."
+                bitbucket_not_set:
+                  summary: Bitbucket connection not set
+                  value:
+                    code: 400
+                    message: Bitbucket connection is not set.
+                project_not_found:
+                  summary: Project not found
+                  value:
+                    code: 404
+                    message: "Create a project first. Which you want to scan."
+                scan_trigger_error:
+                  summary: Scan trigger error
+                  value:
+                    code: 400
+                    message: Error occurred in scan trigger mechanism.
+                illegal_string:
+                  summary: Illegal string
+                  value:
+                    code: 400
+                    message: "Illegal String: <project_name | policy_id | filename | branch>. Don't use these symbols: \\, |, \", ', ?, ~, <, >, :, .., `."
+        '403':
+          description: Access denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                access_denied:
+                  summary: Access denied
+                  value:
+                    code: 403
+                    message: Access denied.
+  /integration/git/start:
+    post:
+      summary: Trigger an existing Git project scan
+      description: Trigger a scan for an existing Git project with the provided parameters.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - project
+              properties:
+                project:
+                  type: string
+                  description: The project to be analyzed.
+                branch:
+                  type: string
+                  description: Optional branch parameter for analyzing a different branch. Defaults to the project's default branch if not provided.
+                policy_id:
+                  type: string
+                  description: Optional policy_id parameter for analyzing the project with a different policy scope. Defaults to the project's default policy_id if not provided.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message.
+                    example: Scan started successfully.
+                  scan_id:
+                    type: string
+                    description: ID of the initiated scan.
+                    example: scan1234
+        '400':
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                missing_fields:
+                  summary: Missing fields
+                  value:
+                    code: 400
+                    message: "Missing Fields: Send { project: string } you want to scan."
+                access_error:
+                  summary: Access error
+                  value:
+                    code: 400
+                    message: "Error Occurred: Could not access git account."
+                git_not_set:
+                  summary: Git connection not set
+                  value:
+                    code: 400
+                    message: Git connection is not set.
+                project_not_found:
+                  summary: Project not found
+                  value:
+                    code: 404
+                    message: "Create a project first. Which you want to scan."
+                scan_trigger_error:
+                  summary: Scan trigger error
+                  value:
+                    code: 400
+                    message: Error occurred in scan trigger mechanism.
+                illegal_string:
+                  summary: Illegal string
+                  value:
+                    code: 400
+                    message: "Illegal String: <project_name | policy_id | filename | branch>. Don't use these symbols: \\, |, \", ', ?, ~, <, >, :, .., `."
+        '403':
+          description: Access denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                access_denied:
+                  summary: Access denied
+                  value:
+                    code: 403
+                    message: Access denied.
+  /integration/github/start:
+    post:
+      summary: Trigger an existing Github project scan
+      description: Trigger a scan for an existing Github project with the provided parameters.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - project
+              properties:
+                project:
+                  type: string
+                  description: The project to be analyzed.
+                branch:
+                  type: string
+                  description: Optional branch parameter for analyzing a different branch. Defaults to the project's default branch if not provided.
+                policy_id:
+                  type: string
+                  description: Optional policy_id parameter for analyzing the project with a different policy scope. Defaults to the project's default policy_id if not provided.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message.
+                    example: Scan started successfully.
+                  scan_id:
+                    type: string
+                    description: ID of the initiated scan.
+                    example: scan1234
+        '400':
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                missing_fields:
+                  summary: Missing fields
+                  value:
+                    code: 400
+                    message: "Missing Fields: Send { project: string } you want to scan."
+                access_error:
+                  summary: Access error
+                  value:
+                    code: 400
+                    message: "Error Occurred: Could not access github account."
+                github_not_set:
+                  summary: Github connection not set
+                  value:
+                    code: 400
+                    message: Github connection is not set.
+                project_not_found:
+                  summary: Project not found
+                  value:
+                    code: 404
+                    message: "Create a project first. Which you want to scan."
+                scan_trigger_error:
+                  summary: Scan trigger error
+                  value:
+                    code: 400
+                    message: Error occurred in scan trigger mechanism.
+                illegal_string:
+                  summary: Illegal string
+                  value:
+                    code: 400
+                    message: "Illegal String: <project_name | policy_id | filename | branch>. Don't use these symbols: \\, |, \", ', ?, ~, <, >, :, .., `."
+        '403':
+          description: Access denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                access_denied:
+                  summary: Access denied
+                  value:
+                    code: 403
+                    message: Access denied.
+  /integration/gitlab/start:
+    post:
+      summary: Trigger an existing Gitlab project scan
+      description: Trigger a scan for an existing Gitlab project with the provided parameters.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - project
+              properties:
+                project_name:
+                  type: string
+                  description: The project to be analyzed.
+                branch:
+                  type: string
+                  description: Optional branch parameter for analyzing a different branch. Defaults to the project's default branch if not provided.
+                policy_id:
+                  type: string
+                  description: Optional policy_id parameter for analyzing the project with a different policy scope. Defaults to the project's default policy_id if not provided.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message.
+                    example: Scan started successfully.
+                  scan_id:
+                    type: string
+                    description: ID of the initiated scan.
+                    example: scan1234
+        '400':
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                missing_fields:
+                  summary: Missing fields
+                  value:
+                    code: 400
+                    message: "Missing Fields: Send { project: string } you want to scan."
+                access_error:
+                  summary: Access error
+                  value:
+                    code: 400
+                    message: "Error Occurred: Could not access azure account."
+                gitlab_not_set:
+                  summary: Gitlab connection not set
+                  value:
+                    code: 400
+                    message: Gitlab connection is not set.
+                project_not_found:
+                  summary: Project not found
+                  value:
+                    code: 404
+                    message: "Create a project first. Which you want to scan."
+                scan_trigger_error:
+                  summary: Scan trigger error
+                  value:
+                    code: 400
+                    message: Error occurred in scan trigger mechanism.
+                illegal_string:
+                  summary: Illegal string
+                  value:
+                    code: 400
+                    message: "Illegal String: <project_name | policy_id | filename | branch>. Don't use these symbols: \\, |, \", ', ?, ~, <, >, :, .., `."
+        '403':
+          description: Access denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                access_denied:
+                  summary: Access denied
+                  value:
+                    code: 403
+                    message: Access denied.
+
+                    
+components:
+  schemas:
+    SuccessfullyPostResponse:
+      type: object
+      properties:
+        result:
+          type: object
+          properties:
+            message:
+              type: string
+              example: successful
+        error:
+          type: boolean
+          example: false
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 400
+        message:
+          type: string
+    ProjectResponse:
+      type: object
+      properties:
+        settings:
+          type: object
+          properties:
+            analyse_settings:
+              type: object
+              properties:
+                excluded_paths:
+                  type: string
+                  nullable: true
+                sca:
+                  type: boolean
+                sast:
+                  type: boolean
+                license_detection:
+                  type: boolean
+                default_policy:
+                  type: string
+                  nullable: true
+        integrations:
+          type: object
+          properties:
+            azure:
+              type: object
+              properties:
+                repoId:
+                  type: string
+                  nullable: true
+                account:
+                  type: string
+                  nullable: true
+                project:
+                  type: string
+                  nullable: true
+                policy_id:
+                  type: string
+                  nullable: true
+                type:
+                  type: string
+                  nullable: true
+                branch:
+                  type: string
+                  nullable: true
+                projectID:
+                  type: string
+                  nullable: true
+            github:
+              type: object
+              properties:
+                repoId:
+                  type: string
+                account:
+                  type: string
+                policy_id:
+                  type: string
+                branch:
+                  type: string
+                url:
+                  type: string
+                type:
+                  type: string
+            gitlab:
+              type: object
+              properties:
+                projectID:
+                  type: string
+                  nullable: true
+                account:
+                  type: string
+                  nullable: true
+                policy_id:
+                  type: string
+                  nullable: true
+                branch:
+                  type: string
+                  nullable: true
+                url:
+                  type: string
+                  nullable: true
+                type:
+                  type: string
+                  nullable: true
+            bitbucket:
+              type: object
+              properties:
+                account:
+                  type: string
+                  nullable: true
+                workspace:
+                  type: string
+                  nullable: true
+                repository:
+                  type: string
+                  nullable: true
+                projectKey:
+                  type: string
+                  nullable: true
+                policy_id:
+                  type: string
+                  nullable: true
+                branch:
+                  type: string
+                  nullable: true
+                type:
+                  type: string
+                  nullable: true
+            git:
+              type: object
+              properties:
+                url:
+                  type: string
+                  nullable: true
+                branch:
+                  type: string
+                  nullable: true
+                policy_id:
+                  type: string
+                  nullable: true
+        schemaVersion:
+          type: string
+        project_name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        version:
+          type: string
+          nullable: true
+        languages:
+          type: array
+          items:
+            type: string
+        created_at:
+          type: string
+          format: date-time
+        tags:
+          type: array
+          items:
+            type: string
+        total_loc:
+          type: integer
+        total_files:
+          type: integer
+        type:
+          type: string
+        owner:
+          type: string
+        team:
+          type: array
+          items:
+            type: string
+        created_by:
+          type: string
+        scan_ids:
+          type: array
+          items:
+            type: string
+        isActive:
+          type: boolean
+        analytics:
+          type: object
+          properties:
+            compliances:
+              type: object
+              additionalProperties:
+                type: integer
+            issueTrend:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  date:
+                    type: string
+                    format: date-time
+                  issues:
+                    type: object
+                    properties:
+                      open:
+                        type: integer
+                      closed:
+                        type: integer
+            topIssueCategories:
+              type: object
+              additionalProperties:
+                type: integer
+            _id:
+              type: string
+        sastSeverities:
+          type: object
+          properties:
+            medium:
+              type: integer
+            critical:
+              type: integer
+            high:
+              type: integer
+            low:
+              type: integer
+        state:
+          type: string
+        last_scan_time:
+          type: integer
+        isRepositorySourceAccessible:
+          type: boolean
+        scaIssuesCount:
+          type: object
+          properties:
+            CRITICAL:
+              type: integer
+            HIGH:
+              type: integer
+            MEDIUM:
+              type: integer
+            LOW:
+              type: integer
+    PolicyResponse: 
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the policy
+        description:
+          type: string
+          description: Description of the policy
+        engine_settings:
+          type: object
+          properties:
+            maximum_execution_time_in_minutes:
+              type: integer
+              description: Maximum execution time in minutes for the scan
+            maximum_method_call_depth:
+              type: integer
+              description: Maximum method call depth allowed
+            enable_full_points_to_analysis:
+              type: boolean
+              description: Whether full points-to analysis is enabled
+            decompiled_code_scan_module:
+              type: boolean
+              description: Whether decompiled code scan module is enabled
+            sast_module:
+              type: boolean
+              description: Whether static application security testing (SAST) module is enabled
+            sca_module:
+              type: boolean
+              description: Whether software composition analysis (SCA) module is enabled
+        fixcost:
+          type: object
+          properties:
+            include:
+              type: array
+              items:
+                type: string
+            exclude:
+              type: array
+              items:
+                type: string
+        impacts:
+          type: object
+          properties:
+            include:
+              type: array
+              items:
+                type: string
+            exclude:
+              type: array
+              items:
+                type: string
+        is_default:
+          type: boolean
+          description: Indicates if the policy is a default bundled policy
+        labels:
+          type: object
+          properties:
+            include:
+              type: array
+              items:
+                type: string
+            exclude:
+              type: array
+              items:
+                type: string
+        platform:
+          type: object
+          properties:
+            include:
+              type: array
+              items:
+                type: string
+            exclude:
+              type: array
+              items:
+                type: string
+        policy_title:
+          type: string
+          description: Title of the policy
+        rootcauses:
+          type: object
+          properties:
+            include:
+              type: array
+              items:
+                type: string
+            exclude:
+              type: array
+              items:
+                type: string
+        scan_type:
+          type: object
+          properties:
+            include:
+              type: array
+              items:
+                type: string
+            exclude:
+              type: array
+              items:
+                type: string
+        schemaVersion:
+          type: string
+          description: Version of the schema
+        severities:
+          type: object
+          properties:
+            include:
+              type: array
+              items:
+                type: string
+            exclude:
+              type: array
+              items:
+                type: string
+        standards:
+          type: object
+          properties:
+            include:
+              type: array
+              items:
+                type: string
+            exclude:
+              type: array
+              items:
+                type: string
+        trustlevel:
+          type: object
+          properties:
+            include:
+              type: array
+              items:
+                type: string
+            exclude:
+              type: array
+              items:
+                type: string
+  examples: 
+    missing_required_field_url_policyId:
+      summary: Missing required field
+      value:
+        code: 400
+        message: 'Missing required field: "url" or "policy_id". Please provide a valid git URL.'
+    illegal_string_branch:
+      summary: Illegal String
+      value:
+        code: 400
+        message: "Illegal characters in the branch name. Allowed characters: alphanumeric, dash, underscore."
+    project_already_created:
+      summary: Project already created
+      value:
+        code: 400
+        message: Project with the same name already exists.
+    missing_required_field_project_name:
+      summary: Missing required field
+      value:
+        code: 400
+        message: "Missing required field: 'project_name'. Please provide a valid project name."
+    project_name_length:
+      summary: Project name length error
+      value:
+        code: 400
+        message: Project name must be between 3 and 1000 characters long.
+    illegal_string_project_name:
+      summary: Illegal String
+      value:
+        code: 400
+        message: "Illegal characters in the project name. Allowed characters: alphanumeric, dash, underscore."
+    description_length:
+      summary: Description length error
+      value:
+        code: 400
+        message: Description cannot exceed 5000 characters.
+    tags_limit_exceeded:
+      summary: Limit exceeded
+      value:
+        code: 400
+        message: Tags maximum length exceeded. Maximum 5 tags allowed.
