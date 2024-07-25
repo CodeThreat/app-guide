@@ -33,7 +33,7 @@ Our team dynamics evolves with us. As our teams grows and industry standards cha
 <summary>Revision List</summary>
 
 * **Version 1.0.0 (07/10/2024)**: Initial release of the CodeThreat Handbook, covering all major sections and initial product concepts.
-* **Version 1.1.0 (07/10/2024)**: Added - Company Policies&#x20;
+* **Version 1.1.0 (07/16/2024)**: Added - Company Policies&#x20;
 * **Version 1.2.0 (07/25/2024)**: Added - Hiring
 
 </details>
