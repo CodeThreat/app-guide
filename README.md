@@ -20,6 +20,8 @@ layout:
 
 # CodeThreat Handbook
 
+
+
 {% hint style="success" %}
 &#x20;Here, you'll find essential information about our company values, team structure, policies, and practices. Whether you're a new team member or looking to refresh your knowledge, this handbook is designed to provide you with the information you need to thrive at CodeThreat.
 {% endhint %}
@@ -32,6 +34,7 @@ Our team dynamics evolves with us. As our teams grows and industry standards cha
 
 * **Version 1.0.0 (07/10/2024)**: Initial release of the CodeThreat Handbook, covering all major sections and initial product concepts.
 * **Version 1.1.0 (07/10/2024)**: Added - Company Policies&#x20;
+* **Version 1.2.0 (07/25/2024)**: Added - Hiring
 
 </details>
 
