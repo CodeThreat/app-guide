@@ -20,4 +20,4 @@ To ensure consistency and clarity in our task management approach, we follow our
 * **Sprint Planning**: Methods for planning and executing sprints effectively.
 * **Success Measurement**: Metrics and KPIs for evaluating task and project success.
 
-You can access our Task Management Product Iteration Playbook here.
+You can access our Task Management Product Iteration Playbook [here](../product-iteration-playbook/).
