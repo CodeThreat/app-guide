@@ -1,5 +1,5 @@
 ---
-description: 'Version: 1.0.1'
+description: 'Version: 1.2.0'
 cover: .gitbook/assets/1675159985994.jpg
 coverY: 0
 layout:
