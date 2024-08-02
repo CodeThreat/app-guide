@@ -18,6 +18,7 @@
   * [v2304.23](product-updates/v2304.23.md)
 * [Privacy Policy](privacy-policy.md)
 * [Terms of Service](terms-of-service.md)
+* [Company Handbook](https://team.codethreat.com)
 
 ## Usage Guide
 
