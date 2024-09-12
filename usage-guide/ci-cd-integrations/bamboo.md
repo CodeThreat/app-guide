@@ -9,13 +9,13 @@ Bamboo is a continuous integration and continuous delivery (CI/CD) tool develope
 * **Installing the Plugin:** Upload the CodeThreat Bamboo plugin to your Bamboo server. This is typically done through Bamboo's Manage Apps or Add-ons section.
 * **Creating a Task within a Plan:** Navigate to an existing or new Bamboo plan and click on the Tasks tab. From there, use the Add task option to add a CodeThreat Scan Task to your plan.
 
-<figure><img src="../../.gitbook/assets/image (5).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (5) (1).png" alt=""><figcaption></figcaption></figure>
 
 #### **Task Configuration**
 
 After adding the task, you will encounter a configuration window like the one below. There are some mandatory fields in this window that you need to fill out:
 
-<figure><img src="../../.gitbook/assets/image (6).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (6) (1).png" alt=""><figcaption></figcaption></figure>
 
 * **Base URL:** The URL of the server where CodeThreat is running. For example,[https://codethreat.example.com](https://codethreat.example.com).
 * **Username and Password or Token:** The username and password or access token for your CodeThreat account. These details are used to authorize CodeThreat scans.

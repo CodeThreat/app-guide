@@ -54,7 +54,7 @@ jobs:
 
 Values under ‘env’: These are the values required to start the CodeThreat scan. These values should be securely entered in your project's Settings > Secrets and variables > Actions section.
 
-<figure><img src="../../.gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (14).png" alt=""><figcaption></figcaption></figure>
 
 There is no need to add GITHUB\_TOKEN as it is automatically provided by GitHub. Using USERNAME and PASSWORD instead of CT\_TOKEN is also possible.
 

@@ -12,15 +12,15 @@ Jenkins is an open-source automation server used to automate continuous integrat
 
 * **Installing the Plugin:** Go to the Jenkins management panel, navigate to Manage Jenkins > Manage Plugins > Available tab, search for "CodeThreat" to find the CodeThreat plugin, and install it.
 
-<figure><img src="../../.gitbook/assets/image (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (1) (1).png" alt=""><figcaption></figcaption></figure>
 
 Adding Credentials: To perform CodeThreat scans, you need to add your credentials to Jenkins. Go to Manage Jenkins > Manage Credentials and create a new credential using the "Username with password" option for your CodeThreat username and password, or the "Secret text" option for your CodeThreat access token. Assign an ID to the credential you create; this ID will be used in the pipeline configuration.
 
-<figure><img src="../../.gitbook/assets/image (2).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (2) (1).png" alt=""><figcaption></figcaption></figure>
 
 Defining a Global Environment Variable: Define a global environment variable for the URL of the server where CodeThreat is running. Go to Manage Jenkins > Configure System, check the "Environment variables" option under "Global properties," and add a variable for the CodeThreat server URL (e.g., CT\_SERVER\_URL).
 
-<figure><img src="../../.gitbook/assets/image (3).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (3) (1).png" alt=""><figcaption></figcaption></figure>
 
 #### **Example Pipeline Configuration**
 

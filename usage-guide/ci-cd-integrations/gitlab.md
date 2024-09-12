@@ -33,7 +33,7 @@ This configuration automates your security scans using the CodeThreat GitLab Plu
 
 * **Configuring Variables:** In the **`variables`** section, define variables specific to GitLab and CodeThreat. These variables should be securely added in the Settings > CI / CD > Variables section of your GitLab group.
 
-<figure><img src="../../.gitbook/assets/image (4).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (4) (1).png" alt=""><figcaption></figcaption></figure>
 
 **Failure Conditions(FAILED\_ARGS)**
 

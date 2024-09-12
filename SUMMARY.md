@@ -2,11 +2,12 @@
 
 ## Latest
 
-* [v2402 GenAI, Sarif and New Language Supports](README.md)
+* [v2409 Cloud Upgrades, Repo Monitoring, Path Exclusion, and New JS/TS Rulesets](README.md)
 
 ***
 
 * [Product Updates](product-updates/README.md)
+  * [v2402 GenAI, Sarif and New Language Supports](product-updates/v2402-genai-sarif-and-new-language-supports.md)
   * [v2401 SCA Release](product-updates/v2401-sca-release.md)
   * [v2311.30](product-updates/v2311.30.md)
   * [v2310.29](product-updates/v2310.29.md)
