@@ -1,5 +1,21 @@
 # API Documentation
 
+{% swagger src="../.gitbook/assets/CodeThreat_API_Doc.yaml" path="/project" method="get" %}
+[CodeThreat_API_Doc.yaml](../.gitbook/assets/CodeThreat_API_Doc.yaml)
+{% endswagger %}
+
+{% swagger src="../.gitbook/assets/CodeThreat_API_Doc.yaml" path="/projects" method="get" %}
+[CodeThreat_API_Doc.yaml](../.gitbook/assets/CodeThreat_API_Doc.yaml)
+{% endswagger %}
+
+{% swagger src="../.gitbook/assets/CodeThreat_API_Doc.yaml" path="/scan/status/{scanId}" method="get" %}
+[CodeThreat_API_Doc.yaml](../.gitbook/assets/CodeThreat_API_Doc.yaml)
+{% endswagger %}
+
+{% swagger src="../.gitbook/assets/CodeThreat_API_Doc.yaml" path="/scanlog/issues" method="post" %}
+[CodeThreat_API_Doc.yaml](../.gitbook/assets/CodeThreat_API_Doc.yaml)
+{% endswagger %}
+
 
 
 {% swagger src="../.gitbook/assets/swagger.yaml" path="/organization/add" method="post" %}
@@ -14,23 +30,7 @@
 [swagger.yaml](../.gitbook/assets/swagger.yaml)
 {% endswagger %}
 
-{% swagger src="../.gitbook/assets/swagger.yaml" path="/projects" method="get" %}
-[swagger.yaml](../.gitbook/assets/swagger.yaml)
-{% endswagger %}
-
-{% swagger src="../.gitbook/assets/swagger.yaml" path="/project" method="get" %}
-[swagger.yaml](../.gitbook/assets/swagger.yaml)
-{% endswagger %}
-
 {% swagger src="../.gitbook/assets/swagger.yaml" path="/scan/start" method="post" %}
-[swagger.yaml](../.gitbook/assets/swagger.yaml)
-{% endswagger %}
-
-{% swagger src="../.gitbook/assets/swagger.yaml" path="/scan/status/{scanId}" method="get" %}
-[swagger.yaml](../.gitbook/assets/swagger.yaml)
-{% endswagger %}
-
-{% swagger src="../.gitbook/assets/swagger.yaml" path="/scanlog/issues" method="get" %}
 [swagger.yaml](../.gitbook/assets/swagger.yaml)
 {% endswagger %}
 
